@@ -22,7 +22,6 @@ public class SecurityConfig {
     }
 
     // For simplicity, we are not hashing passwords.
-    // In a real application, you should use a strong encoder like BCryptPasswordEncoder.
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
@@ -42,16 +41,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        // Allow public access to static resources and the login page
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
-                        // The Business Owner role is required for the /reports URL
                         .requestMatchers("/reports/**").hasRole("BUSINESS_OWNER")
-                        // Any other request requires the user to be authenticated
+                        .requestMatchers("/users/**").hasRole("SYSTEM_ADMINISTRATOR")
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
-                        .loginPage("/login") // Custom login page
-                        .defaultSuccessUrl("/reports", true) // Redirect to reports after login
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/reports", true)
                         .permitAll()
                 )
                 .logout(logout -> logout

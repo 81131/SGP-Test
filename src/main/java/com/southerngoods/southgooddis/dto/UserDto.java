@@ -1,29 +1,30 @@
-package com.southerngoods.southgooddis.model;
+package com.southerngoods.southgooddis.dto;
 
-import jakarta.persistence.*;
+import com.southerngoods.southgooddis.model.Role;
 
-@Entity
-@Table(name = "users")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class UserDto {
+
     private Long id;
-
-    @Column(nullable = false, unique = true)
     private String username;
-
-    @Column(nullable = false)
-    private String password;
-
     private String firstName;
     private String lastName;
-    private boolean enabled = true;
-
-    @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
+    private String password;
     private Role role;
 
+    public UserDto() {
+    }
+
+    public UserDto(Long id, String username, String firstName, String lastName, String password, Role role) {
+        this.id = id;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.role = role;
+    }
+
     // Getters and Setters
+
     public Long getId() {
         return id;
     }
@@ -38,14 +39,6 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getFirstName() {
@@ -64,12 +57,12 @@ public class User {
         this.lastName = lastName;
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    public String getPassword() {
+        return password;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Role getRole() {
