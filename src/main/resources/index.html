@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: page-head(title='Welcome')}"></head>
+<body>
+<div th:replace="~{fragments/header :: page-header}"></div>
+<main class="section">
+    <div class="container">
+        <h2>Welcome to Southern Goods Distributors</h2>
+        <p>Hello, <strong sec:authentication="name">User</strong>. Select an option from the header to get started.</p>
+
+        <div class="hero-section">
+            <h1>Your Inventory, Simplified</h1>
+            <p>Streamline your operations from stock to sale.</p>
+        </div>
+    </div>
+</main>
+</body>
+</html>

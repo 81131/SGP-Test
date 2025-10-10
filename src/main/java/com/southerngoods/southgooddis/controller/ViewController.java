@@ -10,4 +10,16 @@ public class ViewController {
     public String login() {
         return "login";
     }
+
+    @GetMapping("/")
+    public String index() {
+        return "index";
+    }
+
+
+    @GetMapping("/reports")
+    public String reports() {
+        return "reports";
+    }
+
 }
