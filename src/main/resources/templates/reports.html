@@ -4,45 +4,35 @@
     <head th:replace="~{fragments/head :: page-head(title='Business Reports')}"></head>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
-<div th:replace="~{fragments/header :: page-header}"></div>
-<main class="section">
-    <div class="container">
-        <h2>Business Reports Dashboard</h2>
+<body class="app-bg"> <div th:replace="~{fragments/header :: page-header}"></div>
+
+<main>
+    <div class="container glass-container"> <h2>Business Reports Dashboard</h2>
         <p>Welcome, <strong sec:authentication="name">User</strong>. Use the filters below to generate a report.</p>
 
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
-        <div class="form-container">
+        <div class="form-container date-range-form">
             <h4>Select Date Range</h4>
             <form th:action="@{/reports}" method="get" class="form-grid">
-                <div><label for="startDate">Start Date</label><input type="date" id="startDate" name="startDate" th:value="${startDate}" required></div>
-                <div><label for="endDate">End Date</label><input type="date" id="endDate" name="endDate" th:value="${endDate}" required></div>
+                <div>
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" name="startDate" th:value="${startDate}" required>
+                </div>
+                <div>
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" name="endDate" th:value="${endDate}" required>
+                </div>
                 <button type="submit" class="btn">Generate Report</button>
             </form>
         </div>
 
-        <div class="form-container">
-            <h4>Record Manual Expense</h4>
-            <form th:action="@{/reports/expense/add}" method="post" class="form-grid" style="grid-template-columns: 2fr 1fr 1fr 1fr auto;">
-                <input type="text" name="description" placeholder="Expense Description (e.g., Office Supplies)" required>
-                <input type="number" name="amount" placeholder="Amount ($)" step="0.01" required>
-                <input type="date" name="expenseDate" required>
-                <select name="category" required>
-                    <option value="">-- Category --</option>
-                    <option value="Salary">Salary</option><option value="Utilities">Utilities</option><option value="Rent">Rent</option>
-                    <option value="Marketing">Marketing</option><option value="Other">Other</option>
-                </select>
-                <button type="submit" class="btn">Record Expense</button>
-            </form>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+        <div class="grid-container">
             <div class="form-container">
                 <h3>Financial Summary</h3>
                 <h4 style="color: #27ae60;">Total Income: <span th:text="'$' + ${#numbers.formatDecimal(totalIncome, 1, 2)}"></span></h4>
                 <h4 style="color: #e74c3c;">Total Expenses: <span th:text="'$' + ${#numbers.formatDecimal(totalExpenses, 1, 2)}"></span></h4>
-                <hr/>
+                <hr style="border-color: rgba(255,255,255,0.1);"/>
                 <h3 th:style="${netProfit >= 0 ? 'color: #27ae60;' : 'color: #e74c3c;'}">
                     Net Profit: <span th:text="'$' + ${#numbers.formatDecimal(netProfit, 1, 2)}"></span>
                 </h3>
@@ -53,7 +43,7 @@
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+        <div class="grid-container">
             <div class="form-container">
                 <h4>Fast-Moving Items (Best Sellers)</h4>
                 <table class="user-table">
@@ -85,32 +75,10 @@
                 </table>
             </div>
         </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-            <div class="form-container">
-                <h4>Income Records</h4>
-                <table class="user-table" th:unless="${#lists.isEmpty(incomeList)}">
-                    <thead><tr><th>Date</th><th>Type</th><th>Amount</th></tr></thead>
-                    <tbody>
-                    <tr th:each="income : ${incomeList}"><td th:text="${#temporals.format(income.incomeDate, 'dd-MMM-yyyy')}"></td><td th:text="${income.incomeType}"></td><td th:text="'$' + ${#numbers.formatDecimal(income.amount, 1, 2)}"></td></tr>
-                    </tbody>
-                </table>
-                <div th:if="${#lists.isEmpty(incomeList)}" class="alert">No income records found for this period.</div>
-            </div>
-            <div class="form-container">
-                <h4>Expense Records</h4>
-                <table class="user-table" th:unless="${#lists.isEmpty(manualExpenses) and #lists.isEmpty(purchaseExpenses)}">
-                    <thead><tr><th>Date</th><th>Category/Item</th><th>Amount</th></tr></thead>
-                    <tbody>
-                    <tr th:each="expense : ${manualExpenses}"><td th:text="${#temporals.format(expense.expenseDate, 'dd-MMM-yyyy')}"></td><td th:text="${expense.description}"></td><td th:text="'$' + ${#numbers.formatDecimal(expense.amount, 1, 2)}"></td></tr>
-                    <tr th:each="purchase : ${purchaseExpenses}"><td th:text="${#temporals.format(purchase.purchaseDate, 'dd-MMM-yyyy')}"></td><td th:text="${'Purchase: ' + purchase.itemName}"></td><td th:text="'$' + ${#numbers.formatDecimal(purchase.quantityPurchased * purchase.unitPrice, 1, 2)}"></td></tr>
-                    </tbody>
-                </table>
-                <div th:if="${#lists.isEmpty(manualExpenses) and #lists.isEmpty(purchaseExpenses)}" class="alert">No expense records found for this period.</div>
-            </div>
-        </div>
     </div>
 </main>
+
+<div th:replace="~{fragments/footer :: page-footer}"></div>
 
 <script th:inline="javascript">
     /*<![CDATA[*/
@@ -118,6 +86,10 @@
         const totalIncome = /*[[${totalIncome}]]*/ 0;
         const totalExpenses = /*[[${totalExpenses}]]*/ 0;
         const ctx = document.getElementById('incomeVsExpenseChart').getContext('2d');
+
+        // Make Chart.js text white for dark theme
+        Chart.defaults.color = '#ecf0f1';
+
         new Chart(ctx, {
             type: 'pie',
             data: {
