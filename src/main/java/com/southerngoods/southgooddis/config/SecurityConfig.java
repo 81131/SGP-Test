@@ -21,7 +21,6 @@ public class SecurityConfig {
         this.customUserDetailsService = customUserDetailsService;
     }
 
-    // For simplicity, we are not hashing passwords.
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
@@ -41,7 +40,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
+                        // Add the root URL "/" to the list of permitted pages
+                        .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/reports/**").hasRole("BUSINESS_OWNER")
                         .requestMatchers("/users/**").hasRole("SYSTEM_ADMINISTRATOR")
                         .anyRequest().authenticated()

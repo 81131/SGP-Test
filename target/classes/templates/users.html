@@ -2,32 +2,124 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: page-head(title='User Management')}"></head>
 <body>
+
 <div th:replace="~{fragments/header :: page-header}"></div>
-<main class="section">
+
+<main>
     <div class="container">
         <h2>User Management</h2>
-        <a th:href="@{/users/add}" class="btn">Add New User</a>
+        <button class="btn" onclick="openUserModal()">Add New User</button>
+
         <table class="user-table">
             <thead>
             <tr>
                 <th>Username</th>
-                <th>First Name</th>
-                <th>Last Name</th>
+                <th>Full Name</th>
                 <th>Role</th>
-                <th>Enabled</th>
+                <th>Status</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="user : ${users}">
                 <td th:text="${user.username}"></td>
-                <td th:text="${user.firstName}"></td>
-                <td th:text="${user.lastName}"></td>
+                <td th:text="${user.firstName + ' ' + user.lastName}"></td>
                 <td th:text="${user.role.name}"></td>
-                <td th:text="${user.enabled}"></td>
+                <td th:text="${user.enabled ? 'Enabled' : 'Disabled'}"></td>
+                <td>
+                    <button th:attr="data-id=${user.id}" class="btn btn-secondary edit-btn">Edit</button>
+                    <form th:action="@{/users/disable/{id}(id=${user.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Disable</button>
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>
     </div>
 </main>
+
+<div id="userModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeUserModal()">&times;</span>
+        <h3 id="modalTitle">Add New User</h3>
+        <form id="userForm" th:action="@{/users/save}" th:object="${user}" method="post">
+            <input type="hidden" id="id" th:field="*{id}" />
+
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" th:field="*{firstName}" required />
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" th:field="*{lastName}" required />
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" th:field="*{username}" required />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" th:field="*{password}" placeholder="Leave blank to keep current password" />
+            </div>
+            <div class="form-group">
+                <label for="role">Role</label>
+                <select id="role" th:field="*{role.id}" required>
+                    <option th:each="roleOpt : ${roles}" th:value="${roleOpt.id}" th:text="${roleOpt.name}"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn">Save User</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('userModal');
+    const form = document.getElementById('userForm');
+    const modalTitle = document.getElementById('modalTitle');
+
+    function openUserModal() {
+        form.reset();
+        document.getElementById('id').value = '';
+        modalTitle.textContent = 'Add New User';
+        form.action = '/users/save';
+        modal.style.display = "block";
+    }
+
+    function closeUserModal() {
+        modal.style.display = "none";
+    }
+
+    function openEditModal(userId) {
+        fetch('/users/edit/' + userId)
+            .then(response => response.json())
+            .then(user => {
+                modalTitle.textContent = 'Edit User';
+                form.action = '/users/save';
+
+                document.getElementById('id').value = user.id;
+                document.getElementById('firstName').value = user.firstName;
+                document.getElementById('lastName').value = user.lastName;
+                document.getElementById('username').value = user.username;
+                document.getElementById('role').value = user.role.id;
+                document.getElementById('password').value = '';
+
+                modal.style.display = 'block';
+            });
+    }
+
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.getAttribute('data-id');
+            openEditModal(userId);
+        });
+    });
+
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            closeUserModal();
+        }
+    }
+</script>
+
 </body>
 </html>

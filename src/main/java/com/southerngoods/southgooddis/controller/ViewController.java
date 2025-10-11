@@ -17,9 +17,4 @@ public class ViewController {
     }
 
 
-    @GetMapping("/reports")
-    public String reports() {
-        return "reports";
-    }
-
 }

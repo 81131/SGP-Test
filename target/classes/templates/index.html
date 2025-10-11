@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: page-head(title='Welcome')}"></head>
+<body class="hero-bg"> <div th:replace="~{fragments/header :: page-header}"></div>
+
+<main class="hero-section">
+    <div class="container">
+        <h1>Your Inventory, Simplified</h1>
+        <p>Streamline your operations from stock to sale.</p>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: page-footer}"></div>
+
+</body>
+</html>
