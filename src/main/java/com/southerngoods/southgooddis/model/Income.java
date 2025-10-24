@@ -21,7 +21,6 @@ public class Income {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    // 3. UPDATE Getters and Setters for BigDecimal
     public BigDecimal getAmount() {
         return amount;
     }

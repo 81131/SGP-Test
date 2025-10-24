@@ -13,7 +13,6 @@ public class ManualExpense {
 
     private String description;
 
-    // 2. CHANGE float to BigDecimal and add column definition
     @Column(name = "amount", precision = 10, scale = 2, nullable = false)
     private BigDecimal amount;
 
@@ -26,7 +25,6 @@ public class ManualExpense {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    // 3. UPDATE Getters and Setters for BigDecimal
     public BigDecimal getAmount() {
         return amount;
     }

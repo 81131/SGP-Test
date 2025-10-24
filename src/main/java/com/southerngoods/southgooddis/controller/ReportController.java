@@ -58,8 +58,7 @@ public class ReportController {
         List<PurchaseOrder> purchases = purchaseOrderRepository.findPurchasesBetweenDates(startDate, endDate);
         List<ManualExpense> manualExpenses = manualExpenseRepository.findByExpenseDateBetweenOrderByExpenseDateDesc(startDate, endDate);
 
-        // ***** FIX 1: Use .doubleValue() to convert BigDecimal *****
-        double totalIncome = incomeList.stream()
+                double totalIncome = incomeList.stream()
                 .mapToDouble(income -> income.getAmount().doubleValue())
                 .sum();
 
@@ -68,7 +67,7 @@ public class ReportController {
                 .mapToDouble(p -> p.getTotalQuantityPurchased() * p.getUnitPrice().doubleValue())
                 .sum();
 
-        // ***** FIX 2: Use .doubleValue() to convert BigDecimal *****
+
         double otherExpenses = manualExpenses.stream()
                 .mapToDouble(expense -> expense.getAmount().doubleValue())
                 .sum();
@@ -85,7 +84,7 @@ public class ReportController {
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
 
-        // --- Fast-Moving vs. Slow-Moving Items Logic (Updated) ---
+        // Fast-Moving vs. Slow-Moving Items Logic
         List<StockMovement> sales = stockMovementRepository.findSalesBetweenDates(startDate, endDate);
 
         // Group sales by product name and sum the quantity sold
@@ -117,7 +116,6 @@ public class ReportController {
                                    RedirectAttributes redirectAttributes) {
         ManualExpense expense = new ManualExpense();
         expense.setDescription(description);
-        // ***** FIX 3: Convert float to BigDecimal *****
         expense.setAmount(BigDecimal.valueOf(amount));
         expense.setExpenseDate(expenseDate);
         expense.setCategory(category);

@@ -16,7 +16,7 @@ public class StockBatch {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "compartment_id", nullable = false)
-    private Compartment compartment; // You'll need a Compartment model too
+    private Compartment compartment;
 
     @Column(nullable = false)
     private int quantity;

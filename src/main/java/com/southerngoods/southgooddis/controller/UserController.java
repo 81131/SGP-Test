@@ -41,7 +41,7 @@ public class UserController {
     }
 
     @GetMapping("/edit/{id}")
-    @ResponseBody // This tells Spring to return the object as JSON, not a template
+    @ResponseBody
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         User user = userService.findById(id);
         if (user != null) {

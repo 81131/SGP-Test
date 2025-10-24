@@ -10,8 +10,8 @@ public class StockMovement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Correctly link to StockBatch
-    @ManyToOne(fetch = FetchType.LAZY) // Use LAZY fetching for performance
+    // link to StockBatch
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stock_batch_id", nullable = false)
     private StockBatch stockBatch;
 
