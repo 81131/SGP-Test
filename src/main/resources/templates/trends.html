@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <head th:replace="~{fragments/head :: page-head(title='Item Trends')}"></head>
+</head>
+<body class="app-bg"> <div th:replace="~{fragments/header :: page-header}"></div>
+
+<main>
+    <div class="container glass-container">
+        <h2>Item Sales Trends</h2>
+        <p>Analyze product performance based on sales velocity, supplier, and time in inventory.</p>
+
+        <div class="form-container date-range-form">
+            <h4>Select Date Range</h4>
+            <form th:action="@{/trends}" method="get" class="form-grid">
+                <div>
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" name="startDate" th:value="${startDate}" required>
+                </div>
+                <div>
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" name="endDate" th:value="${endDate}" required>
+                </div>
+                <button type="submit" class="btn">Generate Report</button>
+            </form>
+        </div>
+
+        <div class="form-container" style="margin-bottom: 30px;">
+            <h4>Fast-Moving Items (Best Sellers)</h4>
+            <table class="user-table">
+                <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Supplier</th>
+                    <th>Purchase Date</th>
+                    <th>Days in Inventory</th>
+                    <th>Total Quantity Sold</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${fastMovingItems}" th:if="${item.totalQuantity > 0}">
+                    <td th:text="${item.itemName}"></td>
+                    <td th:text="${item.supplierName}"></td>
+                    <td th:text="${item.purchaseDate}"></td>
+                    <td th:text="${item.daysInInventory} + ' days'"></td>
+                    <td th:text="${item.totalQuantity}" style="font-weight: bold;"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(fastMovingItems) or fastMovingItems[0].totalQuantity == 0}">
+                    <td colspan="5" style="text-align: center;">No sales data for this period.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-container">
+            <h4>Slow-Moving Items (Worst Sellers)</h4>
+            <table class="user-table">
+                <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Supplier</th>
+                    <th>Purchase Date</th>
+                    <th>Days in Inventory</th>
+                    <th>Total Quantity Sold</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${slowMovingItems}" th:if="${item.totalQuantity > 0}">
+                    <td th:text="${item.itemName}"></td>
+                    <td th:text="${item.supplierName}"></td>
+                    <td th:text="${item.purchaseDate}"></td>
+                    <td th:text="${item.daysInInventory} + ' days'" style="font-weight: bold; color: #e74c3c;"></td>
+                    <td th:text="${item.totalQuantity}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(slowMovingItems) or slowMovingItems[0].totalQuantity == 0}">
+                    <td colspan="5" style="text-align: center;">No sales data for this period.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: page-footer}"></div>
+
+</body>
+</html>
