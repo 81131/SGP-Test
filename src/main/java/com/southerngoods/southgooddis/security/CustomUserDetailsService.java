@@ -45,7 +45,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user.getRole() == null) {
             return Collections.emptyList();
         }
-        // Spring Security requires roles to be prefixed with "ROLE_"
+
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().getName()));
     }
 }

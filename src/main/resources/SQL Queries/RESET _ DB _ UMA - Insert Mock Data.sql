@@ -1,6 +1,6 @@
--- =================================================================
+
 -- 1. DROP CONSTRAINTS & EXISTING OBJECTS
--- =================================================================
+
 -- Drop foreign key constraints (Order matters!)
 IF EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_stock_movements_batch')
     ALTER TABLE stock_movements DROP CONSTRAINT FK_stock_movements_batch;
@@ -40,9 +40,9 @@ GO
 DROP PROCEDURE IF EXISTS sp_CreateUser;
 GO
 
--- =================================================================
+
 -- 2. CREATE TABLES
--- =================================================================
+
 CREATE TABLE roles (
     id INT PRIMARY KEY IDENTITY(1,1),
     name VARCHAR(255) NOT NULL UNIQUE
@@ -147,9 +147,9 @@ CREATE TABLE manual_expenses (
 );
 GO
 
--- =================================================================
+
 -- 3. CREATE STORED PROCEDURE
--- =================================================================
+
 CREATE PROCEDURE sp_CreateUser
     @username VARCHAR(255),
     @password VARCHAR(255),
@@ -177,9 +177,9 @@ BEGIN
 END
 GO
 
--- =================================================================
+
 -- 4. INSERT MOCK DATA
--- =================================================================
+
 
 -- Roles
 INSERT INTO roles (name) VALUES
@@ -306,9 +306,9 @@ INSERT INTO manual_expenses (description, amount, expense_date, category) VALUES
 ('Staff Transport Oct W2', 85.00, '2025-10-15', 'Transport');
 GO
 
--- =================================================================
+
 -- 5. VERIFY DATA
--- =================================================================
+
 PRINT '--- ROLES ---';
 SELECT * FROM roles ORDER BY id;
 PRINT '';
@@ -333,7 +333,7 @@ FROM stock_batches sb JOIN purchase_orders po ON sb.purchase_order_id = po.id JO
 WHERE sb.quantity > 0 ORDER BY sb.id;
 PRINT '';
 PRINT '--- STOCK MOVEMENTS ---';
--- CORRECTED ALIAS HERE
+
 SELECT sm.id as move_id, sb.id as batch_id, p.name as product, sm.quantity, sm.movement_type, u.username as performed_by_user, sm.movement_date
 FROM stock_movements sm JOIN stock_batches sb ON sm.stock_batch_id = sb.id JOIN purchase_orders po ON sb.purchase_order_id = po.id JOIN products p ON po.product_id = p.id LEFT JOIN users u ON sm.user_id = u.id ORDER BY sm.movement_date, sm.id;
 PRINT '';

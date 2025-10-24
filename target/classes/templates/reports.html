@@ -3,6 +3,13 @@
 <head>
     <head th:replace="~{fragments/head :: page-head(title='Business Reports')}"></head>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .expense-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+    </style>
 </head>
 <body class="app-bg"> <div th:replace="~{fragments/header :: page-header}"></div>
 
@@ -40,6 +47,31 @@
             <div class="form-container">
                 <h3>Income vs. Expenses</h3>
                 <canvas id="incomeVsExpenseChart"></canvas>
+            </div>
+
+            <div class="form-container">
+                <h3>Record Manual Expense</h3>
+                <form th:action="@{/reports/expense/add}" method="post">
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" id="description" name="description" required>
+                    </div>
+                    <div class="expense-form-grid">
+                        <div class="form-group">
+                            <label for="amount">Amount ($)</label>
+                            <input type="number" step="0.01" id="amount" name="amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expenseDate">Expense Date</label>
+                            <input type="date" id="expenseDate" name="expenseDate" th:value="${#temporals.format(endDate, 'yyyy-MM-dd')}" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <input type="text" id="category" name="category" placeholder="e.g., Rent, Utilities, Transport" required>
+                    </div>
+                    <button type="submit" class="btn">Save Expense</button>
+                </form>
             </div>
         </div>
 

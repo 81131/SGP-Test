@@ -9,6 +9,6 @@ import java.util.Optional;
 public interface UserService {
     List<User> findAll();
     User save(UserDto userDto);
-    User findById(Long id); // <-- Add this method
-    void disableUser(Long id); // <-- Add this for the next step
+    User findById(Long id);
+    void disableUser(Long id);
 }

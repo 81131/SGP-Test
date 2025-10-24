@@ -2,7 +2,7 @@
 body {
     font-family: 'Segoe UI', sans-serif;
     margin: 0;
-    /* CORRECTED: Path is /images and 'fixed' is removed for scrolling */
+
     background: url('/images/web-bg.jpg') no-repeat center center/cover;
     color: #ecf0f1; /* Light text for dark background */
     display: flex;
