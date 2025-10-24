@@ -1,6 +1,7 @@
 package com.southerngoods.southgooddis.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal; // <-- 1. IMPORT
 import java.time.LocalDate;
 
 @Entity
@@ -11,7 +12,11 @@ public class ManualExpense {
     private Long id;
 
     private String description;
-    private float amount;
+
+    // 2. CHANGE float to BigDecimal and add column definition
+    @Column(name = "amount", precision = 10, scale = 2, nullable = false)
+    private BigDecimal amount;
+
     private LocalDate expenseDate;
     private String category;
 
@@ -20,8 +25,15 @@ public class ManualExpense {
     public void setId(Long id) { this.id = id; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-    public float getAmount() { return amount; }
-    public void setAmount(float amount) { this.amount = amount; }
+
+    // 3. UPDATE Getters and Setters for BigDecimal
+    public BigDecimal getAmount() {
+        return amount;
+    }
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
     public LocalDate getExpenseDate() { return expenseDate; }
     public void setExpenseDate(LocalDate expenseDate) { this.expenseDate = expenseDate; }
     public String getCategory() { return category; }

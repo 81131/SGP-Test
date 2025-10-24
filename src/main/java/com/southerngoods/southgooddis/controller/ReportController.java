@@ -3,12 +3,12 @@ package com.southerngoods.southgooddis.controller;
 import com.southerngoods.southgooddis.dto.ItemSaleDTO;
 import com.southerngoods.southgooddis.model.Income;
 import com.southerngoods.southgooddis.model.ManualExpense;
-import com.southerngoods.southgooddis.model.PurchaseOrder; // Import new model
-import com.southerngoods.southgooddis.model.StockMovement; // Import new model
+import com.southerngoods.southgooddis.model.PurchaseOrder;
+import com.southerngoods.southgooddis.model.StockMovement;
 import com.southerngoods.southgooddis.repository.IncomeRepository;
 import com.southerngoods.southgooddis.repository.ManualExpenseRepository;
-import com.southerngoods.southgooddis.repository.PurchaseOrderRepository; // Import new repo
-import com.southerngoods.southgooddis.repository.StockMovementRepository; // Import new repo
+import com.southerngoods.southgooddis.repository.PurchaseOrderRepository;
+import com.southerngoods.southgooddis.repository.StockMovementRepository;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,8 +31,8 @@ public class ReportController {
 
     private final IncomeRepository incomeRepository;
     private final ManualExpenseRepository manualExpenseRepository;
-    private final PurchaseOrderRepository purchaseOrderRepository; // Use new repo
-    private final StockMovementRepository stockMovementRepository; // Use new repo
+    private final PurchaseOrderRepository purchaseOrderRepository;
+    private final StockMovementRepository stockMovementRepository;
 
     public ReportController(IncomeRepository incomeRepository,
                             ManualExpenseRepository manualExpenseRepository,
@@ -58,19 +58,26 @@ public class ReportController {
         List<PurchaseOrder> purchases = purchaseOrderRepository.findPurchasesBetweenDates(startDate, endDate);
         List<ManualExpense> manualExpenses = manualExpenseRepository.findByExpenseDateBetweenOrderByExpenseDateDesc(startDate, endDate);
 
-        double totalIncome = incomeList.stream().mapToDouble(Income::getAmount).sum();
+        // ***** FIX 1: Use .doubleValue() to convert BigDecimal *****
+        double totalIncome = incomeList.stream()
+                .mapToDouble(income -> income.getAmount().doubleValue())
+                .sum();
 
         // Calculate purchase expenses from PurchaseOrders
         double purchaseExpenses = purchases.stream()
                 .mapToDouble(p -> p.getTotalQuantityPurchased() * p.getUnitPrice().doubleValue())
                 .sum();
 
-        double otherExpenses = manualExpenses.stream().mapToDouble(ManualExpense::getAmount).sum();
+        // ***** FIX 2: Use .doubleValue() to convert BigDecimal *****
+        double otherExpenses = manualExpenses.stream()
+                .mapToDouble(expense -> expense.getAmount().doubleValue())
+                .sum();
+
         double totalExpenses = purchaseExpenses + otherExpenses;
         double netProfit = totalIncome - totalExpenses;
 
         model.addAttribute("incomeList", incomeList);
-        model.addAttribute("purchaseExpenses", purchases); // Pass the new PurchaseOrder list
+        model.addAttribute("purchaseExpenses", purchases);
         model.addAttribute("manualExpenses", manualExpenses);
         model.addAttribute("totalIncome", totalIncome);
         model.addAttribute("totalExpenses", totalExpenses);
@@ -84,7 +91,7 @@ public class ReportController {
         // Group sales by product name and sum the quantity sold
         Map<String, Integer> salesByItem = sales.stream()
                 .collect(Collectors.groupingBy(
-                        sm -> sm.getProduct().getName(),
+                        sm -> sm.getStockBatch().getPurchaseOrder().getProduct().getName(),
                         Collectors.summingInt(sm -> Math.abs(sm.getQuantity())) // Sum the absolute quantity
                 ));
 
@@ -104,13 +111,14 @@ public class ReportController {
 
     @PostMapping("/expense/add")
     public String addManualExpense(@RequestParam String description,
-                                   @RequestParam float amount,
+                                   @RequestParam float amount, // <-- This is OK
                                    @RequestParam LocalDate expenseDate,
                                    @RequestParam String category,
                                    RedirectAttributes redirectAttributes) {
         ManualExpense expense = new ManualExpense();
         expense.setDescription(description);
-        expense.setAmount(amount);
+        // ***** FIX 3: Convert float to BigDecimal *****
+        expense.setAmount(BigDecimal.valueOf(amount));
         expense.setExpenseDate(expenseDate);
         expense.setCategory(category);
         manualExpenseRepository.save(expense);
