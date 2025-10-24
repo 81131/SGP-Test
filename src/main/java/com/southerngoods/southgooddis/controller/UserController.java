@@ -30,7 +30,7 @@ public class UserController {
         List<Role> roles = roleRepository.findAll();
         model.addAttribute("users", users);
         model.addAttribute("roles", roles);
-        model.addAttribute("user", new UserDto()); // Add empty DTO for the modal form
+        model.addAttribute("user", new UserDto());
         return "users";
     }
 
@@ -56,4 +56,12 @@ public class UserController {
         userService.disableUser(id);
         return "redirect:/users";
     }
+
+
+    @PostMapping("/enable/{id}")
+    public String enableUser(@PathVariable Long id) {
+        userService.enableUser(id);
+        return "redirect:/users";
+    }
+
 }

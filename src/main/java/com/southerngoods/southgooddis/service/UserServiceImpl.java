@@ -15,7 +15,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) { // Update constructor
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
     }
@@ -47,9 +47,12 @@ public class UserServiceImpl implements UserService {
             user.setPassword(userDto.getPassword());
         }
 
-        // Fetch the Role entity from the database using the role ID from the DTO
         if (userDto.getRole() != null && userDto.getRole().getId() != null) {
             roleRepository.findById(userDto.getRole().getId()).ifPresent(user::setRole);
+        }
+
+        if (user.getId() == null) {
+            user.setEnabled(true);
         }
 
         return userRepository.save(user);
@@ -60,6 +63,15 @@ public class UserServiceImpl implements UserService {
         User user = findById(id);
         if (user != null) {
             user.setEnabled(false);
+            userRepository.save(user);
+        }
+    }
+
+    @Override
+    public void enableUser(Long id) {
+        User user = findById(id);
+        if (user != null) {
+            user.setEnabled(true);
             userRepository.save(user);
         }
     }

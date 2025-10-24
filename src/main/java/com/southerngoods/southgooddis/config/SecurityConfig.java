@@ -40,9 +40,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        // Add the root URL "/" to the list of permitted pages
                         .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/reports/**").hasRole("BUSINESS_OWNER")
+                        .requestMatchers("/reports", "/trends").hasRole("BUSINESS_OWNER")
                         .requestMatchers("/users/**").hasRole("SYSTEM_ADMINISTRATOR")
                         .anyRequest().authenticated()
                 )

@@ -12,6 +12,7 @@
             <div sec:authorize="isAuthenticated()">
                 <a th:href="@{/users}" class="btn" sec:authorize="hasRole('SYSTEM_ADMINISTRATOR')">Manage Users</a>
                 <a th:href="@{/reports}" class="btn" sec:authorize="hasRole('BUSINESS_OWNER')">Finance Reports</a>
+                <a th:href="@{/trends}" class="btn" sec:authorize="hasRole('BUSINESS_OWNER')">Item Trends</a>
                 <form th:action="@{/logout}" method="post" style="display: inline; margin-left: 15px;">
                     <button type="submit" class="btn btn-danger">Logout</button>
                 </form>

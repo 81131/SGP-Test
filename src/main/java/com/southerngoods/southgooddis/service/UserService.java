@@ -11,4 +11,5 @@ public interface UserService {
     User save(UserDto userDto);
     User findById(Long id);
     void disableUser(Long id);
+    void enableUser(Long id);
 }

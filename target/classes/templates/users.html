@@ -24,13 +24,16 @@
             <tr th:each="user : ${users}">
                 <td th:text="${user.username}"></td>
                 <td th:text="${user.firstName + ' ' + user.lastName}"></td>
-                <td th:text="${user.role.name}"></td>
-                <td th:text="${user.enabled ? 'Enabled' : 'Disabled'}"></td>
+                <td th:text="${user.role != null ? user.role.name : 'N/A'}"></td> <td th:text="${user.enabled ? 'Enabled' : 'Disabled'}"></td>
                 <td>
                     <button th:attr="data-id=${user.id}" class="btn btn-secondary edit-btn">Edit</button>
-                    <form th:action="@{/users/disable/{id}(id=${user.id})}" method="post" style="display:inline;">
+
+                    <form th:if="${user.enabled}" th:action="@{/users/disable/{id}(id=${user.id})}" method="post" style="display:inline; margin-left: 5px;">
                         <button type="submit" class="btn btn-danger">Disable</button>
                     </form>
+
+                    <form th:unless="${user.enabled}" th:action="@{/users/enable/{id}(id=${user.id})}" method="post" style="display:inline; margin-left: 5px;">
+                        <button type="submit" class="btn" style="background-color: #27ae60;">Enable</button> </form>
                 </td>
             </tr>
             </tbody>
@@ -79,7 +82,8 @@
 
     function openUserModal() {
         form.reset();
-        document.getElementById('id').value = '';
+        document.getElementById('id').value = ''; // Ensure ID is cleared
+        document.getElementById('password').placeholder = 'Password is required for new user'; // Adjust placeholder
         modalTitle.textContent = 'Add New User';
         form.action = '/users/save';
         modal.style.display = "block";
@@ -91,19 +95,27 @@
 
     function openEditModal(userId) {
         fetch('/users/edit/' + userId)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) { throw new Error('Network response was not ok'); }
+                return response.json();
+            })
             .then(user => {
                 modalTitle.textContent = 'Edit User';
-                form.action = '/users/save';
+                form.action = '/users/save'; // Action remains the same for save
 
                 document.getElementById('id').value = user.id;
-                document.getElementById('firstName').value = user.firstName;
-                document.getElementById('lastName').value = user.lastName;
-                document.getElementById('username').value = user.username;
-                document.getElementById('role').value = user.role.id;
-                document.getElementById('password').value = '';
+                document.getElementById('firstName').value = user.firstName || ''; // Handle potential nulls
+                document.getElementById('lastName').value = user.lastName || '';
+                document.getElementById('username').value = user.username || '';
+                document.getElementById('role').value = user.role ? user.role.id : ''; // Handle null role
+                document.getElementById('password').value = ''; // Clear password field for edits
+                document.getElementById('password').placeholder = 'Leave blank to keep current password'; // Reset placeholder
 
                 modal.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+                alert('Could not load user data. Please try again.');
             });
     }
 
