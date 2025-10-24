@@ -10,6 +10,11 @@ import java.util.List;
 
 public interface StockMovementRepository extends JpaRepository<StockMovement, Long> {
 
-    @Query("SELECT sm FROM StockMovement sm WHERE sm.movementType = 'SALE' AND FUNCTION('CAST', sm.movementDate AS date) BETWEEN :startDate AND :endDate")
+    // Corrected Query: Join through StockBatch -> PurchaseOrder -> Product
+    @Query("SELECT sm FROM StockMovement sm " +
+            "JOIN sm.stockBatch sb " +
+            "JOIN sb.purchaseOrder po " + // Assumes StockBatch has 'purchaseOrder' field
+            "JOIN po.product p " +        // Assumes PurchaseOrder has 'product' field
+            "WHERE sm.movementType = 'SALE' AND CAST(sm.movementDate AS date) BETWEEN :startDate AND :endDate")
     List<StockMovement> findSalesBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }
